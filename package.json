@@ -1,0 +1,21 @@
+{
+  "name": "albion-guild-bot",
+  "version": "1.0.0",
+  "description": "A simple discord bot for albion online to track guild activities",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "albion",
+    "guild",
+    "bot"
+  ],
+  "author": "Jefreesujit",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dot-env": "0.0.1",
+    "dotenv": "^8.2.0"
+  }
+}
