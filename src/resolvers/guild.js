@@ -1,4 +1,6 @@
+const Discord = require('discord.js');
 const { prefix } = require('../../config.json');
+const { getGuildDetails } = require('../services');
 
 module.exports = {
 	name: 'guild',
@@ -11,11 +13,29 @@ module.exports = {
       return message.channel.send(`**Guild name**: ${message.guild.name}\n **Total members**: ${message.guild.memberCount}`);
     }
 
-    const option = args[0].toLowerCase();
-    if (args.length !== 2 || !this.options.includes(option)) {
+    const option = args.shift().toLowerCase();
+    if (args.length === 0 || !this.options.includes(option)) {
       return message.reply(`Invalid command, try \`${prefix}help guild\``);
     }
+    
+    const name = args.join('+');
 
-    message.channel.send(`You have tried to get info on ${option} ${args[1]}`)
+    getGuildDetails(name).then((data) => {
+      const exampleEmbed = new Discord.MessageEmbed()
+            .setColor('#0099ff')
+            .setThumbnail('https://i.imgur.com/BgWeozT.png')
+            .addFields(
+              { name: 'Guild Name', value: data.Name },
+              { name: '\u200B', value: '\u200B' },
+              { name: 'Founder', value: data.FounderName, inline: true },
+              { name: 'Alliance', value: data.AllianceTag, inline: true },
+              { name: 'Kill Fame', value: data.killFame, inline: true },
+              { name: 'Death Fame', value: data.DeathFame, inline: true },
+              )
+            .setTimestamp()
+            .setFooter('Albion guild bot', 'https://i.imgur.com/BgWeozT.png');
+
+      message.channel.send(exampleEmbed);
+    });
 	},
 };

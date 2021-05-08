@@ -1,3 +1,6 @@
+const { prefix } = require('../../config.json');
+const { getPlayerDetails } = require('../services');
+
 module.exports = {
 	name: 'player',
 	description: 'Display info about player.',
@@ -14,6 +17,10 @@ module.exports = {
       return message.reply(`Invalid command, try \`${prefix}help player\``);
     }
 
-    message.channel.send(`You have tried to get info on ${option} ${args[1]}`);
+    const name = args[1];
+    getPlayerDetails(name, (data) => {
+      console.log('Inside player CB', data);
+      message.channel.send(`You have tried to perform ${option} on ${name}`);
+    })
 	},
 };
