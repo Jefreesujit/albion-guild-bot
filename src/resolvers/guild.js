@@ -21,21 +21,23 @@ module.exports = {
     const name = args.join('+');
 
     getGuildDetails(name).then((data) => {
-      const exampleEmbed = new Discord.MessageEmbed()
+      const guildDetails = new Discord.MessageEmbed()
             .setColor('#0099ff')
+            .setTitle('Guild Info')
             .setThumbnail('https://i.imgur.com/BgWeozT.png')
             .addFields(
               { name: 'Guild Name', value: data.Name },
               { name: '\u200B', value: '\u200B' },
-              { name: 'Founder', value: data.FounderName, inline: true },
-              { name: 'Alliance', value: data.AllianceTag, inline: true },
-              { name: 'Kill Fame', value: data.killFame, inline: true },
-              { name: 'Death Fame', value: data.DeathFame, inline: true },
+              { name: 'Founder', value: data.FounderName },
+              { name: 'Alliance', value: data.AllianceTag },
+              { name: 'Members', value: data.MemberCount },
+              { name: 'Kill Fame', value: data.killFame },
+              { name: 'Death Fame', value: data.DeathFame },
               )
             .setTimestamp()
             .setFooter('Albion guild bot', 'https://i.imgur.com/BgWeozT.png');
 
-      message.channel.send(exampleEmbed);
+      message.channel.send(guildDetails);
     });
 	},
 };

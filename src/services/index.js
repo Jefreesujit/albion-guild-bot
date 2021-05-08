@@ -13,24 +13,28 @@ const promisify = foo => new Promise((resolve, reject) => {
   })
 })
 
-const getPlayerDetails = (playerName, cb) => {
-  console.log('Player details', playerName);
+const getPlayerDetails = (playerName) => new Promise((res, rej) => {
   search(playerName, (err, data) => {
+    if (err) rej(err);
+    console.log('Player details', data);
     const { players: [ player ] } = data;
-    cb(player);
+    res(player);
   });
-}
+});
 
 const getGuildDetails = (guildName) => new Promise((res, rej) => {
   search(guildName, (err, data) => {
     if (err) rej(err);
-    console.log('Guild details', data);
-    const { guilds: [ guild ] } = data;
-    res(guild);
+    const { guilds: [{ Id }] } = data;
+    getGuildInfo(Id, (err, data) => {
+      if (err) rej(err);
+      console.log('Guild details', data);
+      res(data);
+    })
   });
 });
 
 module.exports = {
   getPlayerDetails,
   getGuildDetails,
-}
+};
