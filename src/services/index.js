@@ -1,40 +1,42 @@
 'use strict';
+const { search, getServerStatus, getGuildInfo, getGuildTopKills, getPlayerTopKills, getPlayerInfo } = require('./api');
 
-const { getPlayerInfo, getGuildInfo, search } = require('albion-api');
+const getStatus = async () => {
+  const { live } = await getServerStatus();
+  return live;
+}
 
-const promisify = foo => new Promise((resolve, reject) => {
-  foo((error, result) => {
-    if(error) {
-      reject(error)
-    } else {
-      console.log('result', result)
-      resolve(result)
-    }
-  })
-})
+const getPlayerDetails = async (playerName) => {
+  const { players: [ player ] } = await search(playerName);
+  const { LifetimeStatistics: { PvE }} = await getPlayerInfo(player.Id);
+  return {
+    ...player,
+    pveFame: PvE.Total
+  };
+};
 
-const getPlayerDetails = (playerName) => new Promise((res, rej) => {
-  search(playerName, (err, data) => {
-    if (err) rej(err);
-    console.log('Player details', data);
-    const { players: [ player ] } = data;
-    res(player);
-  });
-});
+const getPlayerKillDetails = async (guildName) => {
+  const { guilds: [{ Id }] } = await search(guildName);
+  const data = await getPlayerTopKills(Id);
+  return data;
+};
 
-const getGuildDetails = (guildName) => new Promise((res, rej) => {
-  search(guildName, (err, data) => {
-    if (err) rej(err);
-    const { guilds: [{ Id }] } = data;
-    getGuildInfo(Id, (err, data) => {
-      if (err) rej(err);
-      console.log('Guild details', data);
-      res(data);
-    })
-  });
-});
+const getGuildDetails = async (guildName) => {
+  const { guilds: [{ Id }] } = await search(guildName);
+  const data = await getGuildInfo(Id);
+  return data;
+};
+
+const getGuildKillDetails = async (guildName) => {
+  const { guilds: [{ Id }] } = await search(guildName);
+  const data = await getGuildTopKills(Id);
+  return data;
+};
 
 module.exports = {
+  getStatus,
   getPlayerDetails,
   getGuildDetails,
+  getPlayerKillDetails,
+  getGuildKillDetails
 };

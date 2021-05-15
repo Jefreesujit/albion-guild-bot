@@ -5,7 +5,7 @@ const { getGuildDetails } = require('../services');
 module.exports = {
 	name: 'guild',
 	description: 'Display info about this guild.',
-  options: ['fetch', 'track', 'untrack'],
+  options: ['fetch', 'stats', 'topkills'],
   guildOnly: true,
   usage: '<option> <name>',
 	execute(message, args) {
@@ -19,25 +19,28 @@ module.exports = {
     }
     
     const name = args.join('+');
+    if (option === 'fetch') {
+      getGuildDetails(name).then((data) => {
+        const guildDetails = new Discord.MessageEmbed()
+              .setColor('#0099ff')
+              .setTitle('Guild Info')
+              .setThumbnail('https://i.imgur.com/BgWeozT.png')
+              .addFields(
+                { name: 'Guild Name', value: data.Name },
+                { name: '\u200B', value: '\u200B' },
+                { name: 'Founder', value: data.FounderName },
+                { name: 'Alliance', value: data.AllianceTag },
+                { name: 'Members', value: data.MemberCount },
+                { name: 'Kill Fame', value: data.killFame },
+                { name: 'Death Fame', value: data.DeathFame },
+                )
+              .setTimestamp()
+              .setFooter('Albion guild bot', 'https://i.imgur.com/BgWeozT.png');
 
-    getGuildDetails(name).then((data) => {
-      const guildDetails = new Discord.MessageEmbed()
-            .setColor('#0099ff')
-            .setTitle('Guild Info')
-            .setThumbnail('https://i.imgur.com/BgWeozT.png')
-            .addFields(
-              { name: 'Guild Name', value: data.Name },
-              { name: '\u200B', value: '\u200B' },
-              { name: 'Founder', value: data.FounderName },
-              { name: 'Alliance', value: data.AllianceTag },
-              { name: 'Members', value: data.MemberCount },
-              { name: 'Kill Fame', value: data.killFame },
-              { name: 'Death Fame', value: data.DeathFame },
-              )
-            .setTimestamp()
-            .setFooter('Albion guild bot', 'https://i.imgur.com/BgWeozT.png');
-
-      message.channel.send(guildDetails);
-    });
+        message.channel.send(guildDetails);
+      });
+    } else if (option === 'topkills') {
+      message.channel.send(`Getting top kills for ${name}..`);
+    }
 	},
 };
