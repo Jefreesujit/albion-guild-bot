@@ -1,7 +1,11 @@
+const Discord = require('discord.js');
+const { prefix } = require('../../config.json');
+const { getPlayerDetails } = require('../services');
+
 module.exports = {
 	name: 'player',
 	description: 'Display info about player.',
-  options: ['fetch', 'track', 'untrack'],
+  options: ['fetch', 'stats', 'untrack'],
   guildOnly: true,
   usage: '<option> <name>',
 	execute(message, args) {
@@ -9,11 +13,34 @@ module.exports = {
       return message.channel.send(`Your username: ${message.author.username}\nYour ID: ${message.author.id}`);
     }
 
-    const option = args[0].toLowerCase();
-    if (args.length !== 2 || !this.options.includes(option)) {
+    const option = args.shift().toLowerCase();
+    if (args.length !== 1 || !this.options.includes(option)) {
       return message.reply(`Invalid command, try \`${prefix}help player\``);
     }
 
-    message.channel.send(`You have tried to get info on ${option} ${args[1]}`);
+    const name = args[0];
+    if (option === 'fetch') {
+      getPlayerDetails(name).then((data) => {
+        const playerDetails = new Discord.MessageEmbed()
+              .setColor('#0099ff')
+              .setTitle('Player Info')
+              .setThumbnail('https://i.imgur.com/BgWeozT.png')
+              .addFields(
+                { name: 'Player Name', value: data.Name },
+                { name: '\u200B', value: '\u200B' },
+                { name: 'Guild', value: data.GuildName },
+                { name: 'Alliance', value: data.AllianceName },
+                { name: 'PVE Fame', value: data.pveFame },
+                { name: 'Kill Fame', value: data.KillFame },
+                { name: 'Death Fame', value: data.DeathFame },
+                )
+              .setTimestamp()
+              .setFooter('Albion guild bot', 'https://i.imgur.com/BgWeozT.png');
+  
+        message.channel.send(playerDetails);
+      });
+    } else if (option === 'stats') {
+      message.channel.send(`Fetching stats for player ${name}..`);
+    }
 	},
 };
